@@ -1,4 +1,11 @@
 package co.icesi.taller_intro.servlet;
 
-public class TrackServlet {
+
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+
+@WebServlet("/track")
+public class TrackServlet extends HttpServlet {
+
+
 }

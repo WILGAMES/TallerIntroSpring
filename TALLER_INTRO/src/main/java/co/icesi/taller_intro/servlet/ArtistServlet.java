@@ -41,45 +41,42 @@ private ArtistViews artistViews;
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         List<Artist> artists = artistService.getAll();
         StringBuilder sb = new StringBuilder();
-sb.append("<html>");
-sb.append("<body>");
-sb.append(artistViews.listArtist(artists));
-sb.append("</body>");
-sb.append("</html>");
+        sb.append("<html>");
+        sb.append("<body>");
+        sb.append(artistViews.listArtist(artists));
+        sb.append("</body>");
+        sb.append("</html>");
 
-resp.setContentType("text/html");
-resp.getWriter().println(sb.toString());
+        resp.setContentType("text/html");
+        resp.getWriter().println(sb.toString());
 
     }
 
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-BufferedReader br = req.getReader();
-String body = "";
+        BufferedReader br = req.getReader();
+        String body = "";
 
-boolean end = false;
-while (!end) {
-    String currentLine = br.readLine();
-    if (currentLine == null) {
-        end = true;
-    }else{
-        body += currentLine;
-    }
-
-    Map<String, String>data = gson.fromJson(body, HashMap.class);
-}
-/*
-@Override
-    public void destroy(){
-            if(applicationContext != null){
-                ((ClassPathXmlApplicationContext)applicationContext).close();
+        boolean end = false;
+        while (!end) {
+            String currentLine = br.readLine();
+            if (currentLine == null) {
+                end = true;
+            } else {
+                body += currentLine;
             }
+
+            Map<String, String> data = gson.fromJson(body, HashMap.class);
         }
 
- */
 
     }
 
+    @Override
+    public void destroy () {
+        if (applicationContext != null) {
+            ((ClassPathXmlApplicationContext) applicationContext).close();
+        }
 
-
+    }
 
 }
