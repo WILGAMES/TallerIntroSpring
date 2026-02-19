@@ -1,7 +1,6 @@
 package co.icesi.taller_intro.model;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 public class Tracks {
@@ -21,6 +20,15 @@ public class Tracks {
         this.album = album;
         this.genre = genre;
         this.title = title;
+    }
+
+    public Tracks(long id, String title, String duration) {
+        this.id = id;
+        this.title = title;
+        this.duration = duration;
+        this.album = null;
+        this.genre = null;
+        this.artists = new HashSet<>();
     }
 
     public long getId() {
@@ -68,5 +76,14 @@ public class Tracks {
 
     public void setArtists(Set<Artist> artists) {
         this.artists = artists;
+    }
+
+    public void setArtists(java.util.Collection<Artist> artists) {
+        this.artists = new HashSet<>(artists);
+    }
+
+    public void addArtist(Artist artist) {
+        this.artists.add(artist);
+        artist.getTracks().add(this);
     }
 }

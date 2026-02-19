@@ -1,7 +1,6 @@
 package co.icesi.taller_intro.model;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 public class Artist {
@@ -17,6 +16,13 @@ private Set<Tracks> tracks = new HashSet<>();
         this.tracks = tracks;
         this.nationality = nationality;
         this.name = name;
+    }
+
+    public Artist(long id, String name, String nationality) {
+        this.id = id;
+        this.name = name;
+        this.nationality = nationality;
+        this.tracks = new HashSet<>();
     }
 
     public long getId() {
@@ -46,6 +52,10 @@ public void setNationality(String nationality) {
 
     public void setTracks(Set<Tracks> tracks) {
         this.tracks = tracks;
+    }
+
+    public void setTracks(java.util.Collection<Tracks> tracks) {
+        this.tracks = new HashSet<>(tracks);
     }
 
     //M:N bidireccional

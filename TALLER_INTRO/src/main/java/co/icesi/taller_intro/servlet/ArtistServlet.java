@@ -1,82 +1,86 @@
 package co.icesi.taller_intro.servlet;
 
-import co.icesi.taller_intro.model.Artist;
-import co.icesi.taller_intro.services.ArtistService;
-import co.icesi.taller_intro.views.ArtistViews;
+import java.io.IOException;
+import java.util.List;
+
 import com.google.gson.Gson;
-import jakarta.servlet.ServletConfig;
+
+import co.icesi.taller_intro.model.Artist;
+import co.icesi.taller_intro.repositories.ArtistRepository;
+import co.icesi.taller_intro.views.ArtistViews;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @WebServlet("/artist")
 public class ArtistServlet extends HttpServlet {
 
-private ArtistService artistService;
-private Gson gson = new Gson();
-private ApplicationContext applicationContext;
-private ArtistViews artistViews;
+    private Gson gson = new Gson();
+    private ArtistViews artistViews;
 
-@Override
+    @Override
     public void init() {
-    applicationContext = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
-    artistService = (ArtistService) applicationContext.getBean(ArtistService.class);
-    artistViews = new ArtistViews();
-
+        // Initialization of data is performed in ServletContextListener (Intializer)
+        // Use static repositories directly; no Spring ApplicationContext required.
+        artistViews = new ArtistViews();
     }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        List<Artist> artists = artistService.getAll();
-        StringBuilder sb = new StringBuilder();
-        sb.append("<html>");
-        sb.append("<body>");
-        sb.append(artistViews.listArtist(artists));
-        sb.append("</body>");
-        sb.append("</html>");
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
 
-        resp.setContentType("text/html");
-        resp.getWriter().println(sb.toString());
+        String action = request.getParameter("action");
 
-    }
+        response.setContentType("text/html; charset=UTF-8");
 
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        BufferedReader br = req.getReader();
-        String body = "";
-
-        boolean end = false;
-        while (!end) {
-            String currentLine = br.readLine();
-            if (currentLine == null) {
-                end = true;
-            } else {
-                body += currentLine;
-            }
-
-            Map<String, String> data = gson.fromJson(body, HashMap.class);
+        if (action == null || "list".equals(action)) {
+            List<Artist> artists = ArtistRepository.getAll();
+            response.getWriter().write(ArtistViews.listArtists(artists));
+            return;
         }
 
+        if ("search".equals(action)) {
+            String name = request.getParameter("name");
+            Artist artist = ArtistRepository.findByName(name);
+            response.getWriter().write(ArtistViews.artistDetail(artist));
+            return;
+        }
 
+        if ("delete".equals(action)) {
+            String idParam = request.getParameter("id");
+            if (idParam != null) {
+                long id = Long.parseLong(idParam);
+                ArtistRepository.deleteById(id);
+            }
+            response.sendRedirect("artist?action=list");
+            return;
+        }
+    }
+
+
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String action = req.getParameter("action");
+
+        if ("create".equals(action)) {
+            String name = req.getParameter("name");
+            String country = req.getParameter("country");
+
+            long generatedId = ArtistRepository.getAll().stream().mapToLong(Artist::getId).max().orElse(0L) + 1;
+            Artist artist = new Artist(generatedId, name, country);
+            ArtistRepository.save(artist);
+
+            resp.sendRedirect("artist?action=list");
+            return;
+        }
+
+        resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
     }
 
     @Override
     public void destroy () {
-        if (applicationContext != null) {
-            ((ClassPathXmlApplicationContext) applicationContext).close();
-        }
-
+        // No application context to close when not using Spring here
     }
 
 }

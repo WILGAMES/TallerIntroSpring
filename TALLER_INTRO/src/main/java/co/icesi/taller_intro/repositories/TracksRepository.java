@@ -1,11 +1,12 @@
 package co.icesi.taller_intro.repositories;
 
-import jakarta.annotation.PostConstruct;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.stereotype.Component;
 
 import co.icesi.taller_intro.model.Tracks;
-import java.util.ArrayList;
-import java.util.List;
+import jakarta.annotation.PostConstruct;
 
 @Component
 public class TracksRepository {
@@ -19,27 +20,36 @@ public class TracksRepository {
         save(track);
     }
 
-    private List<Tracks> tracks = new ArrayList<>();
+    private static List<Tracks> tracks = new ArrayList<>();
 
-    public void save(Tracks track) {
-        currentTrack++;
-        track.setId(currentTrack);
+    public static void save(Tracks track) {
         tracks.add(track);
     }
 
-    public Tracks findById(long id) {
+    public static Tracks findById(long id) {
         return tracks.stream().filter(track -> track.getId() == id).findFirst().orElse(null);
     }
 
-    public Tracks findByTitle(String title) {
+    public static Tracks findByTitle(String title) {
         return tracks.stream().filter(track -> track.getTitle().equals(title)).findFirst().orElse(null);
     }
 
-    public List<Tracks> findAll() {
+    public static List<Tracks> findAll() {
         return tracks;
     }
 
-    public void delete(long id) {
+    public static List<Tracks> getAll() {
+        return tracks;
+    }
+
+    public static void deleteById(long id) {
         tracks.removeIf(track -> track.getId() == id);
+    }
+
+    public static void initializeTracks() {
+        for (int i = 1; i <= 50; i++) {
+            Tracks track = new Tracks(i, "Track " + i, "180" + i);
+            tracks.add(track);
+        }
     }
 }

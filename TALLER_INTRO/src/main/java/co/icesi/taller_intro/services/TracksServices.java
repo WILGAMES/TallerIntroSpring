@@ -1,59 +1,45 @@
 package co.icesi.taller_intro.services;
 
-import co.icesi.taller_intro.model.Artist;
-import co.icesi.taller_intro.model.Tracks;
-import co.icesi.taller_intro.repositories.ArtistRepository;
-import co.icesi.taller_intro.repositories.TracksRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Component;
 
-import javax.sound.midi.Track;
-import java.util.List;
-import java.util.Objects;
+import co.icesi.taller_intro.model.Artist;
+import co.icesi.taller_intro.model.Tracks;
+import co.icesi.taller_intro.repositories.TracksRepository;
+
 @Component
 public class TracksServices {
 
-    @Autowired
-    private TracksRepository tracksRepository;
-    @Autowired
-    private ArtistRepository artistRepository;
-
-
-    public TracksServices(TracksRepository tracksRepository, ArtistRepository artistRepository) {
-        this.tracksRepository = tracksRepository;
-        this.artistRepository = artistRepository;
+    public TracksServices() {
     }
 
     public void save(Tracks track) {
-        tracksRepository.save(track);
+        TracksRepository.save(track);
     }
 
     public void delete(long id) {
-        tracksRepository.delete(id);
+        TracksRepository.deleteById(id);
     }
 
     public List<Tracks> findAll() {
-        return tracksRepository.findAll();
+        return TracksRepository.findAll();
     }
 
     public List<Tracks> findByArtist(Artist artist) {
-        for(Artist a : artistRepository.findAll()) {
-            if(a.getId() == artist.getId()) {
-                return tracksRepository.findAll();
-            }
+        if (artist == null) {
+            return new ArrayList<>();
         }
-        return null;
+
+        return TracksRepository.findAll().stream()
+                .filter(t -> t.getArtists() != null && t.getArtists().stream().anyMatch(a -> a.getId() == artist.getId()))
+                .collect(Collectors.toList());
     }
 
     public Tracks findByTrack(Tracks track) {
-        for(Tracks t : tracksRepository.findAll()) {
-            if(Objects.equals(t.getTitle(), track.getTitle())){
-                String title = t.getTitle();
-                return tracksRepository.findByTitle(title);
-            }else{
-                return null;
-            }
-        }
-        return null;
+        if (track == null || track.getTitle() == null) return null;
+        return TracksRepository.findByTitle(track.getTitle());
     }
 }
