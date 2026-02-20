@@ -18,13 +18,6 @@ private Set<Tracks> tracks = new HashSet<>();
         this.name = name;
     }
 
-    public Artist(long id, String name, String nationality) {
-        this.id = id;
-        this.name = name;
-        this.nationality = nationality;
-        this.tracks = new HashSet<>();
-    }
-
     public long getId() {
     return id;
 }

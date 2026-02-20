@@ -12,7 +12,6 @@ public class User {
 
     private List<Role> roleList;
 
-    public User() {}
 
     public User(long id, String name, String username, String password, List<Role> roleList) {
         this.id = id;

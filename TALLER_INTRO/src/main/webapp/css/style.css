@@ -1,41 +1,100 @@
-/* Minimal modern stylesheet — clean and readable */
-:root{
-  --bg:#f6f8fb;
-  --card:#ffffff;
-  --muted:#6b7280;
-  --accent:#2563eb; /* blue */
-  --accent-2:#06b6d4; /* teal */
-  --border:rgba(15,23,42,0.06);
-  --radius:8px;
-}
-*{box-sizing:border-box}
-body{font-family:Inter,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:#0f172a;margin:0;padding:24px}
-.container{max-width:980px;margin:0 auto}
-h1{font-size:1.6rem;margin:0 0 12px}
-h2{font-size:1rem;color:var(--muted);margin:8px 0 16px}
-
-.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:16px;box-shadow:0 6px 18px rgba(2,6,23,0.04)}
-
-form.inline{display:flex;gap:8px;align-items:center}
-input[type="text"]{padding:8px 10px;border:1px solid var(--border);border-radius:6px;min-width:160px}
-button, .btn{background:var(--accent);color:#fff;border:none;padding:8px 12px;border-radius:6px;cursor:pointer}
-button.secondary, .btn.secondary{background:transparent;border:1px solid var(--border);color:var(--muted)}
-
-table{width:100%;border-collapse:collapse;background:transparent}
-th,td{padding:10px;text-align:left;border-bottom:1px solid var(--border);vertical-align:top}
-th{font-size:0.85rem;color:var(--muted)}
-td ul{margin:0;padding-left:18px}
-
-a{color:var(--accent);text-decoration:none}
-a.delete{color:#ef4444}
-
-/* responsive */
-@media (max-width:720px){
-  body{padding:12px}
-  th,td{padding:8px}
-  .container{padding:0 8px}
+/* ===== RESET ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
-/* small helpers */
-.muted{color:var(--muted);font-size:0.9rem}
-.small{font-size:0.85rem}
+/* ===== BODY ===== */
+body {
+    background: #f4f6f9;
+    padding: 40px;
+    color: #333;
+}
+
+/* ===== TITULOS ===== */
+h1, h2, h3 {
+    margin-bottom: 20px;
+    color: #1f2937;
+}
+
+/* ===== TABLAS ===== */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 30px;
+    background: white;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+table thead {
+    background-color: #2563eb;
+    color: white;
+}
+
+table th, table td {
+    padding: 12px;
+    text-align: left;
+}
+
+table th {
+    font-weight: bold;
+}
+
+table tbody tr:nth-child(even) {
+    background-color: #f1f5f9;
+}
+
+table tbody tr:hover {
+    background-color: #e2e8f0;
+    transition: 0.2s;
+}
+
+/* ===== FORMULARIOS ===== */
+form {
+    background: white;
+    padding: 20px;
+    margin-bottom: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+form input {
+    padding: 8px;
+    margin: 8px 0;
+    width: 100%;
+    border-radius: 6px;
+    border: 1px solid #d1d5db;
+}
+
+form input[type="checkbox"] {
+    width: auto;
+}
+
+form button {
+    background-color: #2563eb;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+form button:hover {
+    background-color: #1e40af;
+    transition: 0.2s;
+}
+
+/* ===== LISTAS ===== */
+ul {
+    margin-top: 10px;
+    padding-left: 20px;
+}
+
+li {
+    margin-bottom: 5px;
+}

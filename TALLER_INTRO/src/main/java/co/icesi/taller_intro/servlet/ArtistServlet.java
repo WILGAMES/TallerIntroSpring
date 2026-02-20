@@ -1,86 +1,90 @@
 package co.icesi.taller_intro.servlet;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
 
-import com.google.gson.Gson;
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import co.icesi.taller_intro.model.Artist;
-import co.icesi.taller_intro.repositories.ArtistRepository;
+import co.icesi.taller_intro.services.ArtistService;
 import co.icesi.taller_intro.views.ArtistViews;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-@WebServlet("/artist")
+@WebServlet("/artists")
 public class ArtistServlet extends HttpServlet {
 
-    private Gson gson = new Gson();
-    private ArtistViews artistViews;
+private ArtistViews artistViews;
+private ArtistService artistService;
 
     @Override
     public void init() {
-        // Initialization of data is performed in ServletContextListener (Intializer)
-        // Use static repositories directly; no Spring ApplicationContext required.
+        ApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
+        artistService = context.getBean(ArtistService.class);
         artistViews = new ArtistViews();
     }
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-
-        String action = request.getParameter("action");
-
-        response.setContentType("text/html; charset=UTF-8");
-
-        if (action == null || "list".equals(action)) {
-            List<Artist> artists = ArtistRepository.getAll();
-            response.getWriter().write(ArtistViews.listArtists(artists));
-            return;
-        }
-
-        if ("search".equals(action)) {
-            String name = request.getParameter("name");
-            Artist artist = ArtistRepository.findByName(name);
-            response.getWriter().write(ArtistViews.artistDetail(artist));
-            return;
-        }
-
-        if ("delete".equals(action)) {
-            String idParam = request.getParameter("id");
-            if (idParam != null) {
-                long id = Long.parseLong(idParam);
-                ArtistRepository.deleteById(id);
-            }
-            response.sendRedirect("artist?action=list");
-            return;
-        }
-    }
-
-
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String action = req.getParameter("action");
 
-        if ("create".equals(action)) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<html>");
+        sb.append("<head>");
+        sb.append("<link rel='stylesheet' href='css/style.css'>");
+        sb.append("</head>");
+        sb.append("<body>");
+
+        if ("search".equals(action)) {
             String name = req.getParameter("name");
-            String country = req.getParameter("country");
+            Artist artist = artistService.getArtistByNameWithTracks(name);
 
-            long generatedId = ArtistRepository.getAll().stream().mapToLong(Artist::getId).max().orElse(0L) + 1;
-            Artist artist = new Artist(generatedId, name, country);
-            ArtistRepository.save(artist);
-
-            resp.sendRedirect("artist?action=list");
-            return;
+            sb.append("<h2>Resultado de búsqueda</h2>");
+            sb.append(artistViews.showArtistDetails(artist));
         }
+        List<Artist> artists = artistService.getAll();
+        sb.append("<h1>Lista de Artistas</h1>");
+        sb.append(artistViews.listArtists(artists));
 
-        resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
+        sb.append("<h2>Crear Artista</h2>");
+        sb.append(artistViews.createArtistForm());
+
+        sb.append("<h2>Buscar Artista</h2>");
+        sb.append(artistViews.searchArtistForm());
+
+        sb.append("<h2>Eliminar Artista</h2>");
+        sb.append(artistViews.deleteArtistForm());
+
+        sb.append("</body></html>");
+
+        resp.setContentType("text/html");
+        resp.getWriter().println(sb.toString());
+      
     }
 
     @Override
-    public void destroy () {
-        // No application context to close when not using Spring here
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        String action = req.getParameter("action");
+
+        if ("create".equals(action)) {
+            long id = Long.parseLong(req.getParameter("id"));
+            String name = req.getParameter("name");
+            String nationality = req.getParameter("nationality");
+
+            Artist artist = new Artist(id, new HashSet<>(), nationality, name);
+            artistService.save(artist);
+        }
+
+        if ("delete".equals(action)) {
+            long id = Long.parseLong(req.getParameter("id"));
+            artistService.deleteArtistById(id);
+        }
+
+        resp.sendRedirect("artists");
     }
 
 }

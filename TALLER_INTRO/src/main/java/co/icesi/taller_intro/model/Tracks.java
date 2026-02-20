@@ -15,7 +15,6 @@ public class Tracks {
 
     public Tracks(long id, Set<Artist> artists, String duration, String album, String genre, String title) {
         this.id = id;
-        this.artists = artists;
         this.duration = duration;
         this.album = album;
         this.genre = genre;
@@ -46,6 +45,7 @@ public class Tracks {
     public void setTitle(String title) {
         this.title = title;
     }
+
     public String getGenre() {
         return genre;
     }
@@ -72,14 +72,6 @@ public class Tracks {
 
     public Set<Artist> getArtists() {
         return artists;
-    }
-
-    public void setArtists(Set<Artist> artists) {
-        this.artists = artists;
-    }
-
-    public void setArtists(java.util.Collection<Artist> artists) {
-        this.artists = new HashSet<>(artists);
     }
 
     public void addArtist(Artist artist) {

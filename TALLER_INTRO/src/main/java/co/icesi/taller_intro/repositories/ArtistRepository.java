@@ -20,54 +20,34 @@ public class ArtistRepository {
         save(artist);
     }
 
-    private static List<Artist> artists = new ArrayList<Artist>();
+    private  List<Artist> artists = new ArrayList<Artist>();
 
-    public static void save(Artist artist) {
+    public void save(Artist artist) {
+        if (artist.getId() == 0) {
+            currentArtist++;
+            artist.setId(currentArtist);
+        }
         artists.add(artist);
     }
 
-    public static void deleteById(long id) {
+    public List<Artist> getAll() {
+        return artists;
+    }
+
+    public Artist findByName(String name) {
+        return artists.stream()
+                .filter(a -> a.getName() != null && a.getName().equals(name))
+                .findFirst()
+                .orElse(null);
+    }
+
+    public void deleteById(long id) {
         artists.removeIf(a -> a.getId() == id);
     }
 
-    public static Artist findById(long id) {
-        return artists.stream().filter(artist -> artist.getId() == id).findFirst().orElse(null);
-    }
-
-    public static List<Artist> findAll() {
-        return artists;
-    }
-
-    public static List<Artist> getAll() {
-        return artists;
-    }
-
-    public static void initializeData(){
-        for (int i = 1; i <= 10; i++) {
-            Artist artist = new Artist(i, "Artist " + i, "Country " + i);
-            artists.add(artist);
-        }
-
-        int trackIndex = 0;
-
-        // assign 5 tracks per artist if tracks were initialized
-        if (co.icesi.taller_intro.repositories.TracksRepository.getAll().size() >= 50) {
-            for (Artist artist : ArtistRepository.getAll()) {
-                List<Tracks> artistTracks = new ArrayList<>();
-
-                for (int j = 0; j < 5; j++) {
-                    artistTracks.add(co.icesi.taller_intro.repositories.TracksRepository.getAll().get(trackIndex));
-                    trackIndex++;
-                }
-
-                artist.setTracks(artistTracks);
-            }
-        }
-    }
-
-    public static Artist findByName(String name) {
+    public Artist findById(long id) {
         return artists.stream()
-                .filter(a -> a.getName().equalsIgnoreCase(name))
+                .filter(a -> a.getId() == id)
                 .findFirst()
                 .orElse(null);
     }
