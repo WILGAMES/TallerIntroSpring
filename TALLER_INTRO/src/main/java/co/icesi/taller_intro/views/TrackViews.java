@@ -1,92 +1,90 @@
 package co.icesi.taller_intro.views;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import co.icesi.taller_intro.model.Artist;
 import co.icesi.taller_intro.model.Tracks;
 
 public class TrackViews {
 
-    // LISTAR TRACKS
-    public String listTracks(List<Tracks> tracks) {
-
+    public String buildTrackForm(List<Artist> artistsList) {
         StringBuilder sb = new StringBuilder();
+        sb.append("<h2>Add Track</h2>");
+        sb.append("<form action='tracks' method='post'>");
+        sb.append("<input type='hidden' name='action' value='create'>");
+        sb.append("ID: <input type='number' name='id' required><br>");
+        sb.append("Title: <input type='text' name='title' required><br>");
+        sb.append("Duration: <input type='text' name='duration' required><br>");
+        sb.append("Album: <input type='text' name='album'><br>");
+        sb.append("Genre: <input type='text' name='genre'><br>");
 
-        sb.append("<table>");
-        sb.append("<theader>");
-        sb.append("<tr>");
-        sb.append("<th>ID</th>");
-        sb.append("<th>Title</th>");
-        sb.append("<th>Genre</th>");
-        sb.append("<th>Duration</th>");
-        sb.append("<th>Album</th>");
-        sb.append("<th>Artists</th>");
-        sb.append("</tr>");
-        sb.append("</theader>");
-
-        sb.append("<tbody>");
-        for (Tracks track : tracks) {
-
-            sb.append("<tr>");
-            sb.append("<td>" + track.getId() + "</td>");
-            sb.append("<td>" + track.getTitle() + "</td>");
-            sb.append("<td>" + track.getGenre() + "</td>");
-            sb.append("<td>" + track.getDuration() + "</td>");
-            sb.append("<td>" + track.getAlbum() + "</td>");
-
-            sb.append("<td>");
-            for (Artist artist : track.getArtists()) {
-                sb.append(artist.getName() + "<br>");
+        sb.append("<h3>Select Artists</h3>");
+        if (artistsList != null && !artistsList.isEmpty()) {
+            for (Artist a : artistsList) {
+                sb.append("<input type='checkbox' name='artistIds' value='");
+                sb.append(a.getId());
+                sb.append("'> ");
+                sb.append(a.getName());
+                sb.append("<br>");
             }
-            sb.append("</td>");
-
-            sb.append("</tr>");
+        } else {
+            sb.append("No artists available to assign.");
         }
-        sb.append("</tbody>");
+
+        sb.append("<br/><button type='submit'>Add Track</button>");
+        sb.append("</form>");
+        return sb.toString();
+    }
+
+    public String buildTrackTable(List<Tracks> tracksList) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<h2>Track List</h2>");
+        sb.append("<table border='1' style='border-collapse: collapse; width: 100%;'>");
+        sb.append("<tr><th>ID</th><th>Title</th><th>Duration</th><th>Album</th><th>Genre</th><th>Artists</th></tr>");
+
+        if (tracksList != null && !tracksList.isEmpty()) {
+            for (Tracks t : tracksList) {
+                sb.append("<tr>");
+                sb.append("<td>").append(t.getId()).append("</td>");
+                sb.append("<td>").append(t.getTitle()).append("</td>");
+                sb.append("<td>").append(t.getDuration()).append("</td>");
+                sb.append("<td>").append(t.getAlbum() != null ? t.getAlbum() : "-").append("</td>");
+                sb.append("<td>").append(t.getGenre() != null ? t.getGenre() : "-").append("</td>");
+                sb.append("<td>");
+                if (t.getArtists() != null && !t.getArtists().isEmpty()) {
+                    String artists = t.getArtists().stream()
+                                      .map(Artist::getName)
+                                      .collect(Collectors.joining(", "));
+                    sb.append(artists);
+                }
+                sb.append("</td>");
+                sb.append("</tr>");
+            }
+        } else {
+            sb.append("<tr><td colspan='6'>No tracks found.</td></tr>");
+        }
+
         sb.append("</table>");
-
         return sb.toString();
     }
 
-    // FORMULARIO CREAR TRACK
-    public String createTrackForm(List<Artist> artists) {
-
+    public String buildDeleteForm(List<Tracks> tracksList) {
         StringBuilder sb = new StringBuilder();
+        sb.append("<h2>Delete Track</h2>");
+        sb.append("<form action='tracks' method='post'>");
+        sb.append("<input type='hidden' name='action' value='delete'>");
 
-        sb.append("<form method='post' action='tracks'>");
-        sb.append("<input type='hidden' name='action' value='create'/>");
-
-        sb.append("ID: <input type='number' name='id'/><br>");
-        sb.append("Title: <input type='text' name='title'/><br>");
-        sb.append("Genre: <input type='text' name='genre'/><br>");
-        sb.append("Duration: <input type='text' name='duration'/><br>");
-        sb.append("Album: <input type='text' name='albumTitle'/><br>");
-
-        sb.append("<p>Select Artists:</p>");
-
-        for (Artist artist : artists) {
-            sb.append("<input type='checkbox' name='artists' value='" + artist.getId() + "'/>");
-            sb.append(artist.getName() + "<br>");
+        sb.append("<select name='trackId'>");
+        if (tracksList != null && !tracksList.isEmpty()) {
+            for (Tracks t : tracksList) {
+                sb.append("<option value='").append(t.getId()).append("'>").append(t.getTitle()).append("</option>");
+            }
         }
+        sb.append("</select>");
 
-        sb.append("<button type='submit'>Create Track</button>");
+        sb.append(" <button type='submit'>Delete</button>");
         sb.append("</form>");
-
-        return sb.toString();
-    }
-
-    // FORMULARIO ELIMINAR TRACK
-    public String deleteTrackForm() {
-
-        StringBuilder sb = new StringBuilder();
-
-        sb.append("<form method='post' action='tracks'>");
-        sb.append("<input type='hidden' name='action' value='delete'/>");
-
-        sb.append("ID: <input type='number' name='id'/>");
-        sb.append("<button type='submit'>Delete</button>");
-        sb.append("</form>");
-
         return sb.toString();
     }
 }

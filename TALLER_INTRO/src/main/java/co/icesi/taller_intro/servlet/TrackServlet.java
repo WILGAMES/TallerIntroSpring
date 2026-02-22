@@ -2,6 +2,9 @@ package co.icesi.taller_intro.servlet;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -37,81 +40,21 @@ protected void doGet(HttpServletRequest request, HttpServletResponse response)
 
     List<Artist> artistsList = artistService.getAll();
     List<Tracks> tracksList = tracksServices.findAll();
-
     StringBuilder sb = new StringBuilder();
 
     sb.append("<html>");
     sb.append("<head>");
-    sb.append("<link rel='stylesheet' href='css/style.css'>");
     sb.append("</head>");
     sb.append("<body>");
 
     sb.append("<h1>Tracks</h1>");
-
-    sb.append("<h2>Add Track</h2>");
-    sb.append("<form action='tracks' method='post'>");
-
-    sb.append("Title: <input type='text' name='title' required><br>");
-    sb.append("Duration: <input type='text' name='duration' required><br>");
-    sb.append("Album: <input type='text' name='album'><br>");
-    sb.append("Genre: <input type='text' name='genre'><br>");
-
-    sb.append("<h3>Select Artists</h3>");
-
-    for (Artist a : artistsList) {
-        sb.append("<input type='checkbox' name='artistIds' value='");
-        sb.append(a.getId());
-        sb.append("'> ");
-        sb.append(a.getName());
-        sb.append("<br>");
-    }
-
-    sb.append("<button type='submit'>Add Track</button>");
-    sb.append("</form>");
-
-    sb.append("<table>");
-    sb.append("<tr><th>ID</th><th>Title</th><th>Duration</th><th>Album</th><th>Genre</th><th>Artists</th></tr>");
-
-    for (Tracks t : tracksList) {
-        sb.append("<tr>");
-        sb.append("<td>").append(t.getId()).append("</td>");
-        sb.append("<td>").append(t.getTitle()).append("</td>");
-        sb.append("<td>").append(t.getDuration()).append("</td>");
-        sb.append("<td>").append(t.getAlbum() != null ? t.getAlbum() : "-").append("</td>");
-        sb.append("<td>").append(t.getGenre() != null ? t.getGenre() : "-").append("</td>");
-        sb.append("<td>");
-        if (t.getArtists() != null && !t.getArtists().isEmpty()) {
-            for (Artist a : t.getArtists()) {
-                sb.append(a.getName()).append(", ");
-            }
-        }
-        sb.append("</td>");
-        sb.append("</tr>");
-    }
-
-    sb.append("</table>");
-
-    sb.append("<h2>Delete Track</h2>");
-    sb.append("<form action='tracks' method='post'>");
-    sb.append("<input type='hidden' name='action' value='delete'>");
-
-    sb.append("<select name='trackId'>");
-
-    for (Tracks t : tracksList) {
-        sb.append("<option value='");
-        sb.append(t.getId());
-        sb.append("'>");
-        sb.append(t.getTitle());
-        sb.append("</option>");
-    }
-
-    sb.append("</select>");
-
-    sb.append("<button type='submit'>Delete</button>");
-    sb.append("</form>");
+    sb.append(trackViews.buildTrackForm(artistsList));
+    sb.append(trackViews.buildTrackTable(tracksList));
+    sb.append(trackViews.buildDeleteForm(tracksList));
 
     sb.append("</body></html>");
 
+    response.setContentType("text/html");
     response.getWriter().write(sb.toString());
 }
 
@@ -122,28 +65,30 @@ protected void doGet(HttpServletRequest request, HttpServletResponse response)
 		if ("delete".equals(action)) {
 			long trackId = Long.parseLong(req.getParameter("trackId"));
 			tracksServices.delete(trackId);
-		} else {
+		} else if ("create".equals(action)) {
 			// CREAR TRACK
+			long id = Long.parseLong(req.getParameter("id"));
 			String title = req.getParameter("title");
 			String duration = req.getParameter("duration");
 			String album = req.getParameter("album");
 			String genre = req.getParameter("genre");
 
-			List<Artist> artistsList = artistService.getAll();
-			Tracks newTrack = new Tracks(tracksServices.findAll().size() + 1, title, duration);
+			Tracks newTrack = new Tracks(id, title, duration);
 			newTrack.setAlbum(album);
 			newTrack.setGenre(genre);
 
 			String[] artistIds = req.getParameterValues("artistIds");
 
 			if (artistIds != null) {
+				List<Artist> allArtists = artistService.getAll();
+				Map<Long, Artist> artistMap = allArtists.stream()
+						.collect(Collectors.toMap(Artist::getId, Function.identity()));
+
 				for (String idStr : artistIds) {
 					long artistId = Long.parseLong(idStr);
-
-					for (Artist a : artistsList) {
-						if (a.getId() == artistId) {
-							newTrack.addArtist(a);
-						}
+					Artist artist = artistMap.get(artistId);
+					if (artist != null) {
+						newTrack.addArtist(artist);
 					}
 				}
 			}
@@ -154,4 +99,3 @@ protected void doGet(HttpServletRequest request, HttpServletResponse response)
 		resp.sendRedirect("tracks");
 	}
 }
-

@@ -35,7 +35,6 @@ private ArtistService artistService;
         StringBuilder sb = new StringBuilder();
         sb.append("<html>");
         sb.append("<head>");
-        sb.append("<link rel='stylesheet' href='css/style.css'>");
         sb.append("</head>");
         sb.append("<body>");
 
@@ -45,19 +44,21 @@ private ArtistService artistService;
 
             sb.append("<h2>Resultado de búsqueda</h2>");
             sb.append(artistViews.showArtistDetails(artist));
+            sb.append("<br/><a href='artists'>Volver</a>");
+        } else {
+            List<Artist> artists = artistService.getAll();
+            sb.append("<h1>Lista de Artistas</h1>");
+            sb.append(artistViews.listArtists(artists));
+
+            sb.append("<h2>Crear Artista</h2>");
+            sb.append(artistViews.createArtistForm());
+
+            sb.append("<h2>Buscar Artista</h2>");
+            sb.append(artistViews.searchArtistForm());
+
+            sb.append("<h2>Eliminar Artista</h2>");
+            sb.append(artistViews.deleteArtistForm());
         }
-        List<Artist> artists = artistService.getAll();
-        sb.append("<h1>Lista de Artistas</h1>");
-        sb.append(artistViews.listArtists(artists));
-
-        sb.append("<h2>Crear Artista</h2>");
-        sb.append(artistViews.createArtistForm());
-
-        sb.append("<h2>Buscar Artista</h2>");
-        sb.append(artistViews.searchArtistForm());
-
-        sb.append("<h2>Eliminar Artista</h2>");
-        sb.append(artistViews.deleteArtistForm());
 
         sb.append("</body></html>");
 
