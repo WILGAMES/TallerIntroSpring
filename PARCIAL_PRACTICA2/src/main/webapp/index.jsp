@@ -27,6 +27,12 @@
   <button>Crear</button>
 </form>
 
+<h2>Eliminar Vuelo</h2>
+<form action ="delete-flight" method = "post">
+  <input type="text" name="flightId">
+  <button>Eliminar</button>
+</form>
+
 <%
   FlightServices services = AppContext.getInstance().getBean("flightServices" , FlightServices.class);
   for(Flight flight : services.getFlights()) {
