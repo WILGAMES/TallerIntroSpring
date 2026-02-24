@@ -27,4 +27,9 @@ public class FlightRepository {
     public ArrayList<Passanger> getPassangers() {
         return passangers;
     }
+
+    public void removeFlight(String flightId){
+        flights.removeIf(f -> f.getId().equals(flightId));
+        passangers.removeIf(p -> p.getFlightId().equals(flightId));
+    }
 }

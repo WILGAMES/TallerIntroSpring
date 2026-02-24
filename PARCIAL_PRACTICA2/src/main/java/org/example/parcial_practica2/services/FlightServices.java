@@ -52,4 +52,18 @@ public class FlightServices {
         }
     }
 
+<<<<<<< HEAD
+=======
+    public void removeFlight(String flightId){
+
+        Flight foundFlight = flightRepository.getFlights().stream().filter(f -> f.getId().equals(flightId)).findFirst().orElse(null);
+        if(foundFlight == null){
+            System.out.println("El vuelo no existe");
+        }else{
+            flightRepository.removeFlight(flightId);
+        }
+        
+    }
+    
+>>>>>>> 45cf97660fbb29880191d97f907d2b76826830c8
 }
