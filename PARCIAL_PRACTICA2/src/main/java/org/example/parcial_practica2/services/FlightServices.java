@@ -1,13 +1,13 @@
 package org.example.parcial_practica2.services;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.example.parcial_practica2.model.Flight;
 import org.example.parcial_practica2.model.Passanger;
 import org.example.parcial_practica2.repository.FlightRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 public class FlightServices {
@@ -51,5 +51,5 @@ public class FlightServices {
             System.out.println("El vuelo no existe");
         }
     }
-    
+
 }

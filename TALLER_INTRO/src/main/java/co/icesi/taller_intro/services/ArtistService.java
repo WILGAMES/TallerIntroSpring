@@ -1,38 +1,52 @@
 package co.icesi.taller_intro.services;
 
-import java.util.List;
+import java.util.ArrayList;
 
-import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import co.icesi.taller_intro.model.Artist;
 import co.icesi.taller_intro.repositories.ArtistRepository;
 
-@Component
+@Service
 public class ArtistService {
     
-    private final ArtistRepository artistRepository;
-
-    public ArtistService(ArtistRepository artistRepository) {
-        this.artistRepository = artistRepository;
-    }
+    @Autowired
+    ArtistRepository artistRepository;
 
     public void save(Artist artist) {
+        Artist found = artistRepository.getAll().stream()
+                .filter(a -> a.getId() == artist.getId())
+                .findFirst()
+                .orElse(null);
+        if (found == null) {        
         artistRepository.save(artist);
+    }else {
+        System.out.println("El artista ya existe");
+    }
     }
 
-    public List<Artist> getAll() {
+    public ArrayList<Artist> getAll() {
         return artistRepository.getAll();
     }
 
-    public Artist getArtistById(long id) {
-        return artistRepository.findById(id);
+    public void deleteArtistById(long id) {
+        Artist foundArtist = artistRepository.getAll().stream()
+                .filter(a -> a.getId() == id)
+                .findFirst()
+                .orElse(null);
+                if(foundArtist !=null){
+                    artistRepository.deleteById(id);
+                }else{
+                    System.out.println("El artista no existe");
+                }
+        
     }
 
     public Artist getArtistByNameWithTracks(String name) {
-        return artistRepository.findByName(name);
-    }
-
-    public void deleteArtistById(long id) {
-        artistRepository.deleteById(id);
+        return artistRepository.getAll().stream()
+                .filter(a -> a.getName().equals(name))
+                .findFirst()
+                .orElse(null);
     }
 }
