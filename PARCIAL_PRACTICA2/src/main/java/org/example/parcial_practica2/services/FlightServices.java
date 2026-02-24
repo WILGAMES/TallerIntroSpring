@@ -52,8 +52,6 @@ public class FlightServices {
         }
     }
 
-<<<<<<< HEAD
-=======
     public void removeFlight(String flightId){
 
         Flight foundFlight = flightRepository.getFlights().stream().filter(f -> f.getId().equals(flightId)).findFirst().orElse(null);
@@ -64,6 +62,14 @@ public class FlightServices {
         }
         
     }
+
+    public void updatePassanger(Passanger passanger){
+        Passanger foundPassanger = flightRepository.getPassangers().stream().filter(p -> p.getId().equals(passanger.getId())).findFirst().orElse(null);
+        if(foundPassanger == null){
+            System.out.println("El pasajero no existe");
+        }else{
+            flightRepository.updatePassanger(passanger);
+        }
+    }
     
->>>>>>> 45cf97660fbb29880191d97f907d2b76826830c8
 }

@@ -1,0 +1,36 @@
+package org.example.parcial_practica2.servlet;
+
+import java.io.IOException;
+
+import org.example.parcial_practica2.App.AppContext;
+import org.example.parcial_practica2.services.FlightServices;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+
+@WebServlet("/update-passanger")
+public class UpdatePassanger extends HttpServlet{
+    private FlightServices flightServices;
+
+    @Override
+    public void init() throws ServletException {
+        flightServices = AppContext.getInstance().getBean("flightServices",FlightServices.class);
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String id =req.getParameter("id");
+        String name = req.getParameter("name");
+        String passportId = req.getParameter("passportId");
+        String flightId = req.getParameter("flightId");
+
+        flightServices.updatePassanger(new org.example.parcial_practica2.model.Passanger(id, name, passportId, flightId));
+
+        resp.sendRedirect("./");
+    }
+
+}

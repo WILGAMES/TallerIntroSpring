@@ -1,10 +1,10 @@
 package org.example.parcial_practica2.repository;
 
+import java.util.ArrayList;
+
 import org.example.parcial_practica2.model.Flight;
 import org.example.parcial_practica2.model.Passanger;
 import org.springframework.stereotype.Repository;
-
-import java.util.ArrayList;
 
 @Repository
 public class FlightRepository {
@@ -31,5 +31,15 @@ public class FlightRepository {
     public void removeFlight(String flightId){
         flights.removeIf(f -> f.getId().equals(flightId));
         passangers.removeIf(p -> p.getFlightId().equals(flightId));
+    }
+
+    public void updatePassanger(Passanger passanger){
+        for (Passanger p : passangers) {
+            if(p.getId().equals(passanger.getId())){
+                p.setName(passanger.getName());
+                p.setPassportId(passanger.getPassportId());
+                p.setFlightId(passanger.getFlightId());
+            }
+        }
     }
 }

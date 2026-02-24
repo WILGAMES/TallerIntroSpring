@@ -33,6 +33,15 @@
   <button>Eliminar</button>
 </form>
 
+<h2>Actualizar Pasajero</h2>
+<form action ="update-passanger" method = "post">
+  <input type="text" name="id">
+  <input type="text" name="name">
+  <input type="text" name="passportId">
+  <input type="text" name="flightId">
+  <button>Actualizar</button>
+</form>
+
 <%
   FlightServices services = AppContext.getInstance().getBean("flightServices" , FlightServices.class);
   for(Flight flight : services.getFlights()) {
